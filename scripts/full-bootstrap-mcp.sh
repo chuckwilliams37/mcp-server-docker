@@ -4,10 +4,22 @@ set -e
 REPO_URL="https://github.com/chuckwilliams37/mcp-server-docker.git"
 REPO_DIR="mcp-server-docker"
 
+# Function to wait for apt locks to be released
+wait_for_apt_locks() {
+  echo "⏳ Checking for apt locks..."
+  while sudo lsof /var/lib/dpkg/lock >/dev/null 2>&1 || sudo lsof /var/lib/apt/lists/lock >/dev/null 2>&1 || sudo lsof /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+    echo "Waiting for package manager locks to be released... (Process holding lock: $(sudo lsof /var/lib/dpkg/lock-frontend 2>/dev/null | tail -n 1 | awk '{print $2" ("$1")"}' || echo "unknown"))"
+    sleep 10
+  done
+  echo "✅ Package manager locks released."
+}
+
 echo "🚀 Updating system and installing essentials..."
+wait_for_apt_locks
 sudo apt update && sudo apt upgrade -y
+wait_for_apt_locks
 sudo apt install -y git curl wget vim zsh ufw fail2ban net-tools unzip \
-                    ca-certificates gnupg lsb-release build-essential
+                  ca-certificates gnupg lsb-release build-essential
 
 echo "🐚 Installing Oh-My-Zsh with 'jonathan' theme..."
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
@@ -20,6 +32,7 @@ fi
 echo "🐳 Installing Docker and Compose..."
 # Docker GPG and repo
 sudo install -m 0755 -d /etc/apt/keyrings
+wait_for_apt_locks
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
   sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 echo \
@@ -30,7 +43,9 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
 # Install Docker engine & plugin-based compose
+wait_for_apt_locks
 sudo apt update
+wait_for_apt_locks
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo systemctl enable docker
 sudo usermod -aG docker $USER
@@ -42,6 +57,7 @@ sudo ufw --force enable
 sudo systemctl enable --now fail2ban
 
 echo "🖥️ Installing XFCE Desktop Environment and XRDP for Remote Desktop..."
+wait_for_apt_locks
 sudo apt install -y xfce4 xfce4-goodies xrdp
 sudo systemctl enable --now xrdp
 
