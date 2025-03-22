@@ -1,5 +1,3 @@
-#!full-bootstrap-mcp.sh
-
 #!/bin/bash
 set -e
 
@@ -94,4 +92,3 @@ sudo systemctl start "$SERVICE_NAME"
 
 echo "✅ MCP setup complete. Server will auto-start on reboot."
 echo "💡 You may need to reboot or log out and back in for Docker group to take effect."
-]
