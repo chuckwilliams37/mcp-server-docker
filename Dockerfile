@@ -7,7 +7,7 @@ RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install dependencies
-RUN apt-get update && apt-get install -y     build-essential     git     curl     wget     vim     netcat     && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y     build-essential     git     curl     wget     vim     netcat-openbsd     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies
 COPY requirements.txt .

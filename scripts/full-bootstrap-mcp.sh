@@ -71,13 +71,29 @@ sudo adduser xrdp ssl-cert
 echo "🔐 Setting default password for $USER (you'll be prompted to change it)..."
 echo "$USER:changeme" | sudo chpasswd
 
-
-echo "📁 Cloning MCP repo..."
+echo "📁 Setting up MCP repository..."
 cd "$HOME"
-git clone "$REPO_URL"
-cd "$REPO_DIR"
+
+# Check if the repository directory already exists
+if [ -d "$REPO_DIR" ]; then
+  echo "Repository directory already exists, updating instead of cloning..."
+  cd "$REPO_DIR"
+  git fetch
+  git pull
+else
+  echo "Cloning MCP repo..."
+  git clone "$REPO_URL"
+  cd "$REPO_DIR"
+fi
 
 echo "🔧 Building and launching containers..."
+# Check if docker compose is available
+if ! command -v docker &> /dev/null; then
+  echo "❌ Error: Docker is not installed or not in PATH. Please check Docker installation."
+  exit 1
+fi
+
+# Use docker compose (no hyphen) as that's the newer syntax
 docker compose build
 docker compose up -d
 
