@@ -43,6 +43,21 @@ sudo ufw allow 8080/tcp
 sudo ufw --force enable
 sudo systemctl enable --now fail2ban
 
+echo "🖥️ Installing XFCE Desktop Environment and XRDP for Remote Desktop..."
+sudo apt install -y xfce4 xfce4-goodies xrdp
+sudo systemctl enable --now xrdp
+
+# Set default session to XFCE for all users
+echo "startxfce4" | sudo tee /etc/skel/.xsession > /dev/null
+echo "startxfce4" > ~/.xsession
+
+# Fix permissions if needed
+sudo adduser xrdp ssl-cert
+
+echo "🔐 Setting default password for $USER (you'll be prompted to change it)..."
+echo "$USER:changeme" | sudo chpasswd
+
+
 echo "📁 Cloning MCP repo..."
 cd "$HOME"
 git clone "$REPO_URL"
@@ -79,4 +94,4 @@ sudo systemctl start "$SERVICE_NAME"
 
 echo "✅ MCP setup complete. Server will auto-start on reboot."
 echo "💡 You may need to reboot or log out and back in for Docker group to take effect."
-
+]
