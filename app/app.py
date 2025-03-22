@@ -1,9 +1,17 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import redis
+import os
+from dotenv import load_dotenv
+
+load_dotenv()  # Load .env into environment
+
+# Redis connection from env
+redis_host = os.getenv("REDIS_HOST", "localhost")
+redis_port = int(os.getenv("REDIS_PORT", "6379"))
+redis_client = redis.Redis(host=redis_host, port=redis_port)
 
 app = FastAPI()
-redis_client = redis.Redis(host="redis", port=6379)
 
 class Input(BaseModel):
     message: str

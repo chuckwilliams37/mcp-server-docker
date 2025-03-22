@@ -5,3 +5,4 @@ redis
 psycopg2-binary
 timescale-toolkit
 mcp-sdk
+python-dotenv
