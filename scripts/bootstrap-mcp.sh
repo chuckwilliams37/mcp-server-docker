@@ -1,9 +1,16 @@
 #!/bin/bash
+# Installs prerequisites and clones the MCP server repository
+# Usage: ./bootstrap-mcp.sh [repo_url] [repo_dir]
 
 set -e
 
-REPO_URL="https://github.com/chuckwilliams37/mcp-server-docker.git"
-REPO_DIR="mcp-server-docker"
+# Default values - can be overridden with environment variables or command-line arguments
+DEFAULT_REPO_URL="https://github.com/username/mcp-server-docker.git"
+DEFAULT_REPO_DIR="mcp-server-docker"
+
+# Accept parameters from command line or environment variables, fallback to defaults
+REPO_URL="${1:-${MCP_REPO_URL:-$DEFAULT_REPO_URL}}"
+REPO_DIR="${2:-${MCP_REPO_DIR:-$DEFAULT_REPO_DIR}}"
 
 echo "🚀 Updating and installing essentials..."
 sudo apt update && sudo apt upgrade -y
